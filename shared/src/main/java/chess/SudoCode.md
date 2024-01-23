@@ -1,0 +1,26 @@
+ChessBoard
+    ChessGame
+        ChessPiece
+            PieceType
+                Pawn
+                Rook   
+                Knight
+                Bishop
+                Queen
+                King
+            PieceColor
+                White
+                Black
+            PiecePosition
+                x
+                y
+            PieceMovement
+                move
+                capture
+                enPassant
+                castling
+                promotion
+            PieceState
+                alive
+                dead
+            Piece

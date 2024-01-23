@@ -1,0 +1,51 @@
+package chess.movesets;
+
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+
+public class PawnMoves extends Moveset {
+    public boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition) {
+        boolean[][] validMoves = new boolean[8][8];
+        int row = piecePosition.getRow() - 1;
+        int col = piecePosition.getColumn() - 1;
+
+        boolean isWhite = board.getPiece(piecePosition).getTeamColor() == ChessGame.TeamColor.WHITE;
+        int upOne = isWhite ? 1 : -1;
+
+        // Check if the pawn can move one space forward
+        if (isInBounds(row + upOne, col)
+                && !board.isPiece(row + upOne, col)) {
+            validMoves[row + upOne][col] = true;
+        }
+
+        // Check if the pawn can move two spaces forward
+        boolean inStartingPosition = isWhite ? row == 1 : row == 6;
+        if (inStartingPosition &&
+                validMoves[row + upOne][col] &&
+                !board.isPiece(row + (upOne * 2), col)) {
+
+            validMoves[row + (upOne * 2)][col] = true;
+        }
+
+        // Check if the pawn can take a piece
+        if (isInBounds(row + upOne, col - 1) &&
+                board.isEnemy(row + upOne, col - 1, isWhite)) {
+
+            validMoves[row + upOne][col - 1] = true;
+        }
+        if (isInBounds(row + upOne, col + 1) &&
+                board.isEnemy(row + upOne, col + 1, isWhite)) {
+
+            validMoves[row + upOne][col + 1] = true;
+        }
+        
+        // TODO: Implement en passant
+
+        boolean onLastRow = isWhite ? row == 7 : row == 0;
+
+        // TODO: Implement pawn promotion
+
+        return validMoves;
+    }
+}
