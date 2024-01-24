@@ -3,6 +3,7 @@ package chess;
 import chess.movesets.*;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -70,5 +71,22 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return moveset.getChessMoves(board, myPosition);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessPiece that)) return false;
+
+        if (pieceColor != that.pieceColor) return false;
+        if (type != that.type) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pieceColor != null ? pieceColor.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
     }
 }

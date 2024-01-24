@@ -48,4 +48,29 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;
     }
+
+    @Override
+    public String toString() {
+        return startPosition + "->" + endPosition;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessMove chessMove)) return false;
+
+        if (getStartPosition() != null ? !getStartPosition().equals(chessMove.getStartPosition()) : chessMove.getStartPosition() != null)
+            return false;
+        if (getEndPosition() != null ? !getEndPosition().equals(chessMove.getEndPosition()) : chessMove.getEndPosition() != null)
+            return false;
+        return getPromotionPiece() == chessMove.getPromotionPiece();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStartPosition() != null ? getStartPosition().hashCode() : 0;
+        result = 31 * result + (getEndPosition() != null ? getEndPosition().hashCode() : 0);
+        result = 31 * result + (getPromotionPiece() != null ? getPromotionPiece().hashCode() : 0);
+        return result;
+    }
 }

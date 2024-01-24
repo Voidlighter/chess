@@ -2,6 +2,9 @@ package chess;
 
 import chess.ChessPiece.PieceType;
 import chess.ChessGame.TeamColor;
+
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -21,7 +24,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRow()][position.getColumn()] = piece;
+        board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -32,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()][position.getColumn()];
+        return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     public ChessPiece getPiece(int row, int col) {
@@ -44,7 +47,10 @@ public class ChessBoard {
     }
 
     public boolean isEnemy(int row, int col, boolean isWhite) {
-        return board[row][col] != null;
+        if (!isPiece(row, col)) {
+            return false;
+        }
+        return board[row][col].getTeamColor() == (isWhite ? TeamColor.BLACK : TeamColor.WHITE);
     }
 
     /**
@@ -74,5 +80,18 @@ public class ChessBoard {
         board[7][5] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
         board[7][6] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
         board[7][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessBoard that)) return false;
+
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }

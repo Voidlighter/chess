@@ -31,4 +31,25 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
+    @Override
+    public String toString() {
+        return "(" + row + ", " + col + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessPosition that)) return false;
+
+        if (getRow() != that.getRow()) return false;
+        return col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getRow();
+        result = 31 * result + col;
+        return result;
+    }
 }

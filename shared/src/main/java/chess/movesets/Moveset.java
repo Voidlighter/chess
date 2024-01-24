@@ -12,8 +12,7 @@ public abstract class Moveset {
 
     private boolean[][] Moves = new boolean[8][8];
 
-    public List<int[]> getTupledMoves(ChessBoard board, ChessPosition piecePosition) {
-        Moves = getMoves(board, piecePosition);
+    public List<int[]> getTupledMoves() {
         List<int[]> tupledMoves = new ArrayList<>();
         for (int i = 0; i < Moves.length; i++) {
             for (int j = 0; j < Moves[i].length; j++) {
@@ -23,6 +22,10 @@ public abstract class Moveset {
             }
         }
         return tupledMoves;
+    }
+    public List<int[]> getTupledMoves(ChessBoard board, ChessPosition piecePosition) {
+        Moves = getMoves(board, piecePosition);
+        return getTupledMoves();
     }
 
     public Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition piecePosition) {
@@ -43,6 +46,15 @@ public abstract class Moveset {
     }
     protected boolean isInBounds(int row) {
         return row >= 0 && row < 8;
+    }
+
+    public String toString() {
+        List<int[]> tupledMoves = getTupledMoves();
+        StringBuilder sb = new StringBuilder();
+        for (int[] tupledMove : tupledMoves) {
+            sb.append(tupledMove[0]).append(", ").append(tupledMove[1]).append("\n");
+        }
+        return sb.toString();
     }
 
     public abstract boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition);
