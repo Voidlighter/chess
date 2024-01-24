@@ -34,7 +34,7 @@ public abstract class Moveset {
         for (int i = 0; i < Moves.length; i++) {
             for (int j = 0; j < Moves[i].length; j++) {
                 if (Moves[i][j]) {
-                    chessMoves.add(new ChessMove(piecePosition, new ChessPosition(i, j)));
+                    chessMoves.add(new ChessMove(piecePosition, new ChessPosition(i+1, j+1)));
                 }
             }
         }

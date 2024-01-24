@@ -7,8 +7,8 @@ import chess.ChessPosition;
 public class PawnMoves extends Moveset {
     public boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition) {
         boolean[][] validMoves = new boolean[8][8];
-        int row = piecePosition.getRow();
-        int col = piecePosition.getColumn();
+        int row = piecePosition.getRow()-1;
+        int col = piecePosition.getColumn()-1;
 
         boolean isWhite = board.getPiece(piecePosition).getTeamColor() == ChessGame.TeamColor.WHITE;
         int upOne = isWhite ? 1 : -1;
@@ -20,7 +20,6 @@ public class PawnMoves extends Moveset {
             // Check if the pawn can move two spaces forward
             boolean inStartingPosition = isWhite ? row == 1 : row == 6;
             if (inStartingPosition && !board.isPiece(row + (upOne * 2), col)) {
-
                 validMoves[row + (upOne * 2)][col] = true;
             }
         }
