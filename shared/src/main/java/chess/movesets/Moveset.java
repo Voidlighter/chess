@@ -52,7 +52,7 @@ public abstract class Moveset {
 
         // Check in each direction what the piece can do
         for (int[] direction : directions) {
-            for (int i = 1; i < distance; i++) { // i = 1–7; checks until edge of board
+            for (int i = 1; i <= distance; i++) { // i = 1–7; checks until edge of board
                 int tryY = row + (i * direction[0]);
                 int tryX = col + (i * direction[1]);
                 if (isInBounds(tryY, tryX)) {
@@ -70,7 +70,7 @@ public abstract class Moveset {
         return moves;
     }
     protected boolean[][] lineMoves(ChessBoard board, ChessPosition piecePosition, int[][] directions) {
-        return lineMoves(board, piecePosition, directions, 8);
+        return lineMoves(board, piecePosition, directions, 7);
     }
 
     protected boolean isInBounds(int row, int col) {
