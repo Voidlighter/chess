@@ -74,6 +74,29 @@ public class ChessPiece {
     }
 
     @Override
+    public String toString() {
+        String str = " ";
+        switch (getPieceType()) {
+            case KING:
+                str = "K";
+            case QUEEN:
+                str = "Q";
+            case BISHOP:
+                str = "B";
+            case KNIGHT:
+                str = "K";
+            case ROOK:
+                str = "R";
+            case PAWN:
+                str = "P";
+        }
+        if (getTeamColor() == ChessGame.TeamColor.BLACK) {
+            str = str.toLowerCase();
+        }
+        return str;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ChessPiece that)) return false;

@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class ChessBoard {
     private ChessPiece[][] board = new ChessPiece[8][8];
     public ChessBoard() {
-        resetBoard();
+
     }
 
     /**
@@ -81,6 +81,32 @@ public class ChessBoard {
         board[7][6] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
         board[7][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 7; i >= 0; i--) { // reversed so 1 starts at the bottom
+            for (int j = 0; j < 8; j++) {
+                sb.append('|');
+                sb.append(board[i][j] == null ? " " : board[i][j].toString());
+            }
+            sb.append("|\n");
+        }
+        return sb.toString();
+    }
+
+    /* preview
+    """
+    | | | | | | | | |
+    | | | | | | | | |
+    | | | | | | | | |
+    | | | | | | | | |
+    | | | |P| | | | |
+    | | | | | | | | |
+    | | | | | | | | |
+    | | | | | | | | |
+    """
+     */
 
     @Override
     public boolean equals(Object o) {

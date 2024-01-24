@@ -58,4 +58,6 @@ public abstract class Moveset {
     }
 
     public abstract boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition);
+
+
 }
