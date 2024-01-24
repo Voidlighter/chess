@@ -20,20 +20,18 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        switch (getPieceType()) {
-            case KING:
-                moveset = new KingMoves();
-            case QUEEN:
-                moveset = new QueenMoves();
-            case BISHOP:
-                moveset = new BishopMoves();
-            case KNIGHT:
-                moveset = new KnightMoves();
-            case ROOK:
-                moveset = new RookMoves();
-            case PAWN:
-                moveset = new PawnMoves();
-        }
+        moveset = getMoveset(type);
+    }
+
+    private Moveset getMoveset(PieceType type) {
+        return switch (type) {
+            case KING -> new KingMoves();
+            case QUEEN -> new QueenMoves();
+            case BISHOP -> new BishopMoves();
+            case KNIGHT -> new KnightMoves();
+            case ROOK -> new RookMoves();
+            case PAWN -> new PawnMoves();
+        };
     }
 
     /**
@@ -46,6 +44,18 @@ public class ChessPiece {
         KNIGHT,
         ROOK,
         PAWN
+    }
+    private String typeToString(PieceType type) {
+        return switch (type) {
+            case KING -> "King";
+            case QUEEN -> "Queen";
+            case BISHOP -> "Bishop";
+            case KNIGHT -> "Knight";
+            case ROOK -> "Rook";
+            case PAWN -> "Pawn";
+            case null -> " ";
+            default -> throw new IllegalStateException("Unexpected PieceType: " + type);
+        };
     }
 
     /**
@@ -75,21 +85,7 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        String str = " ";
-        switch (getPieceType()) {
-            case KING:
-                str = "K";
-            case QUEEN:
-                str = "Q";
-            case BISHOP:
-                str = "B";
-            case KNIGHT:
-                str = "K";
-            case ROOK:
-                str = "R";
-            case PAWN:
-                str = "P";
-        }
+        String str = typeToString(type);
         if (getTeamColor() == ChessGame.TeamColor.BLACK) {
             str = str.toLowerCase();
         }

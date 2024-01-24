@@ -6,21 +6,21 @@ import chess.ChessPosition;
 
 public class PawnMoves extends Moveset {
     public boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition) {
-        boolean[][] validMoves = new boolean[8][8];
-        int row = piecePosition.getRow()-1;
-        int col = piecePosition.getColumn()-1;
+        boolean[][] moves = new boolean[8][8];
+        int row = piecePosition.getRow() - 1;
+        int col = piecePosition.getColumn() - 1;
 
         boolean isWhite = board.getPiece(piecePosition).getTeamColor() == ChessGame.TeamColor.WHITE;
         int upOne = isWhite ? 1 : -1;
 
         // Check if the pawn can move one space forward
         if (isInBounds(row + upOne, col) && !board.isPiece(row + upOne, col)) {
-            validMoves[row + upOne][col] = true;
+            moves[row + upOne][col] = true;
 
             // Check if the pawn can move two spaces forward
             boolean inStartingPosition = isWhite ? row == 1 : row == 6;
             if (inStartingPosition && !board.isPiece(row + (upOne * 2), col)) {
-                validMoves[row + (upOne * 2)][col] = true;
+                moves[row + (upOne * 2)][col] = true;
             }
         }
 
@@ -29,7 +29,7 @@ public class PawnMoves extends Moveset {
             if (isInBounds(row + upOne, col + x) &&
                     board.isEnemy(row + upOne, col + x, isWhite)) {
 
-                validMoves[row + upOne][col + x] = true;
+                moves[row + upOne][col + x] = true;
             }
         }
 
@@ -39,6 +39,6 @@ public class PawnMoves extends Moveset {
 
         // TODO: Implement pawn promotion
 
-        return validMoves;
+        return moves;
     }
 }
