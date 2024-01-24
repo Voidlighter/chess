@@ -41,6 +41,38 @@ public abstract class Moveset {
         return chessMoves;
     }
 
+    public abstract boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition);
+
+    protected boolean[][] lineMoves(ChessBoard board, ChessPosition piecePosition, int[][] directions, int distance) {
+        boolean[][] moves = new boolean[8][8];
+        int row = piecePosition.getRow() - 1;
+        int col = piecePosition.getColumn() - 1;
+
+        boolean isWhite = board.getPiece(piecePosition).getTeamColor() == chess.ChessGame.TeamColor.WHITE;
+
+        // Check in each direction what the piece can do
+        for (int[] direction : directions) {
+            for (int i = 1; i < distance; i++) { // i = 1–7; checks until edge of board
+                int tryY = row + (i * direction[0]);
+                int tryX = col + (i * direction[1]);
+                if (isInBounds(tryY, tryX)) {
+                    if (board.isPiece(tryY, tryX)) {
+                        if (board.isEnemy(tryY, tryX, isWhite)) {
+                            moves[tryY][tryX] = true;
+                        }
+                        break; // stops checking in this direction
+                    } else {
+                        moves[tryY][tryX] = true;
+                    }
+                }
+            }
+        }
+        return moves;
+    }
+    protected boolean[][] lineMoves(ChessBoard board, ChessPosition piecePosition, int[][] directions) {
+        return lineMoves(board, piecePosition, directions, 8);
+    }
+
     protected boolean isInBounds(int row, int col) {
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
@@ -56,8 +88,4 @@ public abstract class Moveset {
         }
         return sb.toString();
     }
-
-    public abstract boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition);
-
-
 }
