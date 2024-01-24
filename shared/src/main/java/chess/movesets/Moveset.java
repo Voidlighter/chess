@@ -10,7 +10,8 @@ import java.util.List;
 
 public abstract class Moveset {
 
-    private boolean[][] Moves = new boolean[8][8];
+    protected boolean[][] Moves = new boolean[8][8];
+    protected List<ChessMove> chessMoves = new ArrayList<>();
 
     public List<int[]> getTupledMoves() {
         List<int[]> tupledMoves = new ArrayList<>();
@@ -30,7 +31,6 @@ public abstract class Moveset {
 
     public Collection<ChessMove> getChessMoves(ChessBoard board, ChessPosition piecePosition) {
         Moves = getMoves(board, piecePosition);
-        List<ChessMove> chessMoves = new ArrayList<>();
         for (int i = 0; i < Moves.length; i++) {
             for (int j = 0; j < Moves[i].length; j++) {
                 if (Moves[i][j]) {
