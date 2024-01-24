@@ -6,10 +6,6 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 public class PawnMoves extends Moveset {
 
     public boolean[][] getMoves(ChessBoard board, ChessPosition piecePosition) {
@@ -41,6 +37,7 @@ public class PawnMoves extends Moveset {
             }
         }
 
+        // If the pawn can promote, replace the move with all possible promotions
         if (byLastRow) {
             for (int i = 0; i < 8; i++) {
                 if (moves[row + upOne][i]) {
@@ -53,8 +50,6 @@ public class PawnMoves extends Moveset {
                 }
             }
         }
-
-
 
         // To eventually do: Implement en passant
 

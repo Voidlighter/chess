@@ -1,7 +1,6 @@
 package chess.movesets;
 
 import chess.ChessBoard;
-import chess.ChessGame;
 import chess.ChessPosition;
 
 public class KnightMoves extends Moveset {

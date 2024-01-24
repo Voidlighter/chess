@@ -3,7 +3,6 @@ package chess;
 import chess.movesets.*;
 
 import java.util.Collection;
-import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -54,7 +53,6 @@ public class ChessPiece {
             case ROOK -> "Rook";
             case PAWN -> "Pawn";
             case null -> " ";
-            default -> throw new IllegalStateException("Unexpected PieceType: " + type);
         };
     }
 
@@ -99,6 +97,7 @@ public class ChessPiece {
 
         if (pieceColor != that.pieceColor) return false;
         if (type != that.type) return false;
+
         return true;
     }
 
