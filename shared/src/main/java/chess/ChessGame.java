@@ -1,5 +1,7 @@
 package chess;
 
+import chess.ChessBoard;
+
 import java.util.Collection;
 import java.util.Objects;
 
@@ -11,7 +13,8 @@ import java.util.Objects;
  */
 public class ChessGame {
 
-    public ChessBoard gameBoard = new ChessBoard();
+    public chess.ChessBoard chessBoard = new ChessBoard();
+
     public ChessGame() {
 
     }
@@ -48,7 +51,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        return chessBoard.getPiece(startPosition).pieceMoves(chessBoard, startPosition);
     }
 
     /**
@@ -115,11 +118,11 @@ public class ChessGame {
         if (this == o) return true;
         if (!(o instanceof ChessGame chessGame)) return false;
 
-        return Objects.deepEquals(gameBoard, chessGame.gameBoard);
+        return Objects.equals(chessBoard, chessGame.chessBoard);
     }
 
     @Override
     public int hashCode() {
-        return gameBoard != null ? gameBoard.hashCode() : 0;
+        return chessBoard != null ? chessBoard.hashCode() : 0;
     }
 }

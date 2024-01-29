@@ -8,6 +8,7 @@ package chess;
  */
 public class ChessMove {
 
+
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
@@ -51,10 +52,8 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        if (promotionPiece != null) {
-            return startPosition + "->" + endPosition + "=" + promotionPiece;
-        }
-        return startPosition + "->" + endPosition;
+        return promotionPiece == null ? startPosition + "->" + endPosition :
+                startPosition + "->" + endPosition + promotionPiece;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class ChessPosition {
     private final int col;
 
     public ChessPosition(int row, int col) {
-        this.row = row; // 1-8 ON THE BOARD; 0-7 in the array
+        this.row = row;
         this.col = col;
     }
 

@@ -1,8 +1,10 @@
 package chess;
 
-import chess.movesets.*;
+import chess.moveset.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a single chess piece
@@ -12,13 +14,14 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    private final ChessGame.TeamColor pieceColor;
-    private final PieceType type;
+    public PieceType type;
+    public ChessGame.TeamColor color;
     public Moveset moveset;
 
+    public List<ChessMove> chessMoves = new ArrayList<>();
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
-        this.type = type;
+        color = pieceColor;
         moveset = getMoveset(type);
     }
 
@@ -42,25 +45,33 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN;
+
+        @Override
+        public String toString() {
+            return this == KNIGHT ? "N" : name().substring(0, 1);
+        }
     }
-    private String typeToString(PieceType type) {
-        return switch (type) {
-            case KING -> "King";
-            case QUEEN -> "Queen";
-            case BISHOP -> "Bishop";
-            case KNIGHT -> "Knight";
-            case ROOK -> "Rook";
-            case PAWN -> "Pawn";
-            case null -> " ";
-        };
+
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        boolean[][] moves = moveset.getMoves(board, position);
+        return chessify(position, moves);
+    }
+
+    public List<ChessMove> chessify(ChessPosition position, boolean[][] moves) {
+        for (int i = 0; i <= 7; i++) {
+            for (int j = 0; j <= 7; j++) {
+                if (moves[i][j]) chessMoves.add(new ChessMove(position, new ChessPosition(i + 1, j + 1)));
+            }
+        }
+        return chessMoves;
     }
 
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return pieceColor;
+        return color;
     }
 
     /**
@@ -77,17 +88,10 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return moveset.getChessMoves(board, myPosition);
-    }
 
     @Override
     public String toString() {
-        String str = typeToString(type);
-        if (getTeamColor() == ChessGame.TeamColor.BLACK) {
-            str = str.toLowerCase();
-        }
-        return str;
+        return type != null ? type.toString() : " ";
     }
 
     @Override
@@ -95,16 +99,11 @@ public class ChessPiece {
         if (this == o) return true;
         if (!(o instanceof ChessPiece that)) return false;
 
-        if (pieceColor != that.pieceColor) return false;
-        if (type != that.type) return false;
-
-        return true;
+        return type == that.type;
     }
 
     @Override
     public int hashCode() {
-        int result = pieceColor != null ? pieceColor.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return type != null ? type.hashCode() : 0;
     }
 }
