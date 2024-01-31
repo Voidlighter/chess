@@ -6,8 +6,8 @@ import chess.ChessPosition;
 public class BishopMoves extends Moveset {
 
     @Override
-    protected void calcMoves() {
+    protected void calcMoves(ChessBoard board, ChessPosition position) {
         int[][] directions = {{1,1},{-1,1},{-1,-1},{1,-1}};
-        lineMoves(board, fromPosition, directions);
+        moves = lineMoves(board, position, directions);
     }
 }

@@ -2,7 +2,9 @@ package chess;
 
 import chess.moveset.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents a single chess piece
@@ -14,7 +16,9 @@ public class ChessPiece {
 
     private final PieceType type;
     private final ChessGame.TeamColor color;
-    private final Moveset moveset;
+    public Moveset moveset;
+
+    public List<ChessMove> chessMoves = new ArrayList<>();
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
@@ -51,7 +55,17 @@ public class ChessPiece {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return moveset.getMoves(board, position);
+        boolean[][] moves = moveset.getMoves(board, position);
+        return chessify(position, moves);
+    }
+
+    public List<ChessMove> chessify(ChessPosition position, boolean[][] moves) {
+        for (int i = 0; i <= 7; i++) {
+            for (int j = 0; j <= 7; j++) {
+                if (moves[i][j]) chessMoves.add(new ChessMove(position, new ChessPosition(i + 1, j + 1)));
+            }
+        }
+        return chessMoves;
     }
 
     /**
