@@ -12,7 +12,9 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] board = new ChessPiece[8][8];
+
+    private final ChessPiece[][] board = new ChessPiece[8][8];
+
     public ChessBoard() {
 
     }
@@ -38,19 +40,13 @@ public class ChessBoard {
         return board[position.getRow() - 1][position.getColumn() - 1];
     }
 
-    public ChessPiece getPiece(int row, int col) {
-        return board[row][col];
-    }
-
     public boolean isPiece(int row, int col) {
         return board[row][col] != null;
     }
 
-    public boolean isEnemy(int row, int col, boolean isWhite) {
-        if (!isPiece(row, col)) {
-            return false;
-        }
-        return board[row][col].getTeamColor() == (isWhite ? TeamColor.BLACK : TeamColor.WHITE);
+    public boolean isEnemy(boolean isWhite, int row, int col) {
+        if (!isPiece(row, col)) return false;
+        return board[row][col].getTeamColor() != (isWhite ? TeamColor.WHITE : TeamColor.BLACK);
     }
 
     /**
@@ -58,55 +54,52 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-
-        for (int i = 0; i < 8; i++) {
-            board[1][i] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
-            board[6][i] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        // This will run for white and black
+        for (int i = 0; i < 2; i++) {
+            boolean isWhite = i == 0;
+            TeamColor color = isWhite ? TeamColor.WHITE : TeamColor.BLACK;
+            int row = isWhite ? 1 : 8; // as a ChessPosition, not as an array index
+            int row2 = isWhite ? 2 : 7; // as a ChessPosition, not as an array index
+            addPiece(new ChessPosition(row, 1), new ChessPiece(color, PieceType.ROOK));
+            addPiece(new ChessPosition(row, 2), new ChessPiece(color, PieceType.KNIGHT));
+            addPiece(new ChessPosition(row, 3), new ChessPiece(color, PieceType.BISHOP));
+            addPiece(new ChessPosition(row, 4), new ChessPiece(color, PieceType.QUEEN));
+            addPiece(new ChessPosition(row, 5), new ChessPiece(color, PieceType.KING));
+            addPiece(new ChessPosition(row, 6), new ChessPiece(color, PieceType.BISHOP));
+            addPiece(new ChessPosition(row, 7), new ChessPiece(color, PieceType.KNIGHT));
+            addPiece(new ChessPosition(row, 8), new ChessPiece(color, PieceType.ROOK));
+            for (int col = 1; col <= 8; col++) {
+                addPiece(new ChessPosition(row2, col), new ChessPiece(color, PieceType.PAWN));
+            }
         }
-        board[0][0] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
-        board[0][1] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
-        board[0][2] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
-        board[0][3] = new ChessPiece(TeamColor.WHITE, PieceType.QUEEN);
-        board[0][4] = new ChessPiece(TeamColor.WHITE, PieceType.KING);
-        board[0][5] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
-        board[0][6] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
-        board[0][7] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
-
-        board[7][0] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
-        board[7][1] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
-        board[7][2] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
-        board[7][3] = new ChessPiece(TeamColor.BLACK, PieceType.QUEEN);
-        board[7][4] = new ChessPiece(TeamColor.BLACK, PieceType.KING);
-        board[7][5] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
-        board[7][6] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
-        board[7][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
     }
+    /*
+
+    |r|n|b|q|k|b|n|r| 8
+    |p|p|p|p|p|p|p|p| 7
+    | | | | | | | | | 6
+    | | | | | | | | | 5
+    | | | | | | | | | 4
+    | | | | | | | | | 3
+    |P|P|P|P|P|P|P|P| 2
+    |R|N|B|Q|K|B|N|R| 1
+
+     1 2 3 4 5 6 7 8
+
+     */
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 7; i >= 0; i--) { // reversed so 1 starts at the bottom
-            for (int j = 0; j < 8; j++) {
-                sb.append('|');
-                sb.append(board[i][j] == null ? " " : board[i][j].toString());
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j <= 7; j++) {
+                sb.append("|");
+                sb.append(board[i][j] == null ? " " : board[i][j]);
             }
             sb.append("|\n");
         }
         return sb.toString();
     }
-
-    /* preview
-    """
-    | | | | | | | | |
-    | | | | | | | | |
-    | | | | | | | | |
-    | | | | | | | | |
-    | | | |P| | | | |
-    | | | | | | | | |
-    | | | | | | | | |
-    | | | | | | | | |
-    """
-     */
 
     @Override
     public boolean equals(Object o) {

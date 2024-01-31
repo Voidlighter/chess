@@ -12,6 +12,7 @@ import java.util.Objects;
 public class ChessGame {
 
     public ChessBoard gameBoard = new ChessBoard();
+
     public ChessGame() {
 
     }
@@ -48,7 +49,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        return gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
     }
 
     /**

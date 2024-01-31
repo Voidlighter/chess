@@ -1,0 +1,304 @@
+Subject: [PATCH] Uncommitted changes before Checkout at 1/29/2024 3:01 PM [Changes]
+---
+Index: shared/src/main/java/chess/ChessPiece.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/ChessPiece.java b/shared/src/main/java/chess/ChessPiece.java
+--- a/shared/src/main/java/chess/ChessPiece.java	
++++ b/shared/src/main/java/chess/ChessPiece.java	
+@@ -1,6 +1,6 @@
+ package chess;
+ 
+-import chess.moveset.*;
++import chess.movesets.*;
+ 
+ import java.util.ArrayList;
+ import java.util.Collection;
+@@ -14,14 +14,15 @@
+  */
+ public class ChessPiece {
+ 
+-    public PieceType type;
+-    public ChessGame.TeamColor color;
++    private final PieceType type;
++    private final ChessGame.TeamColor color;
+     public Moveset moveset;
+ 
+     public List<ChessMove> chessMoves = new ArrayList<>();
+ 
+     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+-        color = pieceColor;
++        this.type = type;
++        this.color = pieceColor;
+         moveset = getMoveset(type);
+     }
+ 
+Index: shared/src/main/java/chess/ChessGame.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/ChessGame.java b/shared/src/main/java/chess/ChessGame.java
+--- a/shared/src/main/java/chess/ChessGame.java	
++++ b/shared/src/main/java/chess/ChessGame.java	
+@@ -1,7 +1,5 @@
+ package chess;
+ 
+-import chess.ChessBoard;
+-
+ import java.util.Collection;
+ import java.util.Objects;
+ 
+@@ -13,7 +11,7 @@
+  */
+ public class ChessGame {
+ 
+-    public chess.ChessBoard chessBoard = new ChessBoard();
++    public ChessBoard gameBoard = new ChessBoard();
+ 
+     public ChessGame() {
+ 
+@@ -51,7 +49,7 @@
+      * startPosition
+      */
+     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+-        return chessBoard.getPiece(startPosition).pieceMoves(chessBoard, startPosition);
++        return gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
+     }
+ 
+     /**
+@@ -118,11 +116,11 @@
+         if (this == o) return true;
+         if (!(o instanceof ChessGame chessGame)) return false;
+ 
+-        return Objects.equals(chessBoard, chessGame.chessBoard);
++        return Objects.deepEquals(gameBoard, chessGame.gameBoard);
+     }
+ 
+     @Override
+     public int hashCode() {
+-        return chessBoard != null ? chessBoard.hashCode() : 0;
++        return gameBoard != null ? gameBoard.hashCode() : 0;
+     }
+ }
+Index: shared/src/main/java/chess/ChessMove.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/ChessMove.java b/shared/src/main/java/chess/ChessMove.java
+--- a/shared/src/main/java/chess/ChessMove.java	
++++ b/shared/src/main/java/chess/ChessMove.java	
+@@ -8,7 +8,6 @@
+  */
+ public class ChessMove {
+ 
+-
+     private final ChessPosition startPosition;
+     private final ChessPosition endPosition;
+     private final ChessPiece.PieceType promotionPiece;
+@@ -52,8 +51,10 @@
+ 
+     @Override
+     public String toString() {
+-        return promotionPiece == null ? startPosition + "->" + endPosition :
+-                startPosition + "->" + endPosition + promotionPiece;
++        if (promotionPiece != null) {
++            return startPosition + "->" + endPosition + "=" + promotionPiece;
++        }
++        return startPosition + "->" + endPosition;
+     }
+ 
+     @Override
+Index: shared/src/main/java/chess/ChessPosition.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/ChessPosition.java b/shared/src/main/java/chess/ChessPosition.java
+--- a/shared/src/main/java/chess/ChessPosition.java	
++++ b/shared/src/main/java/chess/ChessPosition.java	
+@@ -12,7 +12,7 @@
+     private final int col;
+ 
+     public ChessPosition(int row, int col) {
+-        this.row = row;
++        this.row = row; // 1-8 ON THE BOARD; 0-7 in the array
+         this.col = col;
+     }
+ 
+Index: shared/src/main/java/chess/ChessBoard.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/ChessBoard.java b/shared/src/main/java/chess/ChessBoard.java
+--- a/shared/src/main/java/chess/ChessBoard.java	
++++ b/shared/src/main/java/chess/ChessBoard.java	
+@@ -13,7 +13,7 @@
+  */
+ public class ChessBoard {
+ 
+-    final ChessPiece[][] board = new ChessPiece[8][8];
++    private final ChessPiece[][] board = new ChessPiece[8][8];
+ 
+     public ChessBoard() {
+ 
+@@ -45,7 +45,7 @@
+     }
+ 
+     public boolean isEnemy(boolean isWhite, int row, int col) {
+-        if (board[row][col] == null) return false;
++        if (!isPiece(row, col)) return false;
+         return board[row][col].getTeamColor() != (isWhite ? TeamColor.WHITE : TeamColor.BLACK);
+     }
+ 
+@@ -93,7 +93,8 @@
+         StringBuilder sb = new StringBuilder();
+         for (int i = 7; i >= 0; i--) {
+             for (int j = 0; j <= 7; j++) {
+-                sb.append("|").append(board[i][j]);
++                sb.append("|");
++                sb.append(board[i][j] == null ? " " : board[i][j]);
+             }
+             sb.append("|\n");
+         }
+Index: shared/src/main/java/chess/moveset/Moveset.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/Moveset.java b/shared/src/main/java/chess/movesets/Moveset.java
+rename from shared/src/main/java/chess/moveset/Moveset.java
+rename to shared/src/main/java/chess/movesets/Moveset.java
+--- a/shared/src/main/java/chess/moveset/Moveset.java	
++++ b/shared/src/main/java/chess/movesets/Moveset.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessGame;
+@@ -17,20 +17,20 @@
+ 
+     protected boolean[][] lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
+         boolean[][] newMoves = new boolean[8][8];
+-        int row = position.getRow()-1;
+-        int col = position.getColumn()-1;
++        int row = position.getRow() - 1;
++        int col = position.getColumn() - 1;
+         boolean isWhite = board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE;
+ 
+         // We are going to iterate in the direction given until we hit a piece (where true if enemy then stop)
+         for (int[] direction : directions) { // pick a direction
+-            for (int i = 1; i<=distance; i++) { // iterate in that direction (as far as the piece would)
++            for (int i = 1; i <= distance; i++) { // iterate in that direction (as far as the piece would)
+                 // we pick where we are going to test as a valid move
+                 int tryY = row + (i * direction[0]);
+                 int tryX = col + (i * direction[1]);
+                 // and make sure it is in bounds
+                 if (isInBounds(tryY, tryX)) {
+                     // if there is a piece, we stop
+-                    if (board.isPiece(tryY,tryX)) {
++                    if (board.isPiece(tryY, tryX)) {
+                         //but if it's an enemy, we still add that as a spot we can move
+                         if (board.isEnemy(isWhite, tryY, tryX)) {
+                             newMoves[tryY][tryX] = true;
+Index: shared/src/main/java/chess/moveset/RookMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/RookMoves.java b/shared/src/main/java/chess/movesets/RookMoves.java
+rename from shared/src/main/java/chess/moveset/RookMoves.java
+rename to shared/src/main/java/chess/movesets/RookMoves.java
+--- a/shared/src/main/java/chess/moveset/RookMoves.java	
++++ b/shared/src/main/java/chess/movesets/RookMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessPosition;
+Index: shared/src/main/java/chess/moveset/KnightMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/KnightMoves.java b/shared/src/main/java/chess/movesets/KnightMoves.java
+rename from shared/src/main/java/chess/moveset/KnightMoves.java
+rename to shared/src/main/java/chess/movesets/KnightMoves.java
+--- a/shared/src/main/java/chess/moveset/KnightMoves.java	
++++ b/shared/src/main/java/chess/movesets/KnightMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessPosition;
+Index: shared/src/main/java/chess/moveset/PawnMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/PawnMoves.java b/shared/src/main/java/chess/movesets/PawnMoves.java
+rename from shared/src/main/java/chess/moveset/PawnMoves.java
+rename to shared/src/main/java/chess/movesets/PawnMoves.java
+--- a/shared/src/main/java/chess/moveset/PawnMoves.java	
++++ b/shared/src/main/java/chess/movesets/PawnMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.*;
+ import chess.ChessPiece.PieceType;
+Index: shared/src/main/java/chess/moveset/KingMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/KingMoves.java b/shared/src/main/java/chess/movesets/KingMoves.java
+rename from shared/src/main/java/chess/moveset/KingMoves.java
+rename to shared/src/main/java/chess/movesets/KingMoves.java
+--- a/shared/src/main/java/chess/moveset/KingMoves.java	
++++ b/shared/src/main/java/chess/movesets/KingMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessPosition;
+Index: shared/src/main/java/chess/moveset/QueenMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/QueenMoves.java b/shared/src/main/java/chess/movesets/QueenMoves.java
+rename from shared/src/main/java/chess/moveset/QueenMoves.java
+rename to shared/src/main/java/chess/movesets/QueenMoves.java
+--- a/shared/src/main/java/chess/moveset/QueenMoves.java	
++++ b/shared/src/main/java/chess/movesets/QueenMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessPosition;
+Index: shared/src/main/java/chess/moveset/BishopMoves.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/src/main/java/chess/moveset/BishopMoves.java b/shared/src/main/java/chess/movesets/BishopMoves.java
+rename from shared/src/main/java/chess/moveset/BishopMoves.java
+rename to shared/src/main/java/chess/movesets/BishopMoves.java
+--- a/shared/src/main/java/chess/moveset/BishopMoves.java	
++++ b/shared/src/main/java/chess/movesets/BishopMoves.java	
+@@ -1,4 +1,4 @@
+-package chess.moveset;
++package chess.movesets;
+ 
+ import chess.ChessBoard;
+ import chess.ChessPosition;
