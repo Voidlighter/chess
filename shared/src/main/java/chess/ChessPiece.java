@@ -16,9 +16,9 @@ public class ChessPiece {
 
     private final PieceType type;
     private final ChessGame.TeamColor color;
-    public Moveset moveset;
+    private final Moveset moveset;
 
-    public List<ChessMove> chessMoves = new ArrayList<>();
+    private final List<ChessMove> moves = new ArrayList<>();
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
@@ -55,17 +55,7 @@ public class ChessPiece {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        boolean[][] moves = moveset.getMoves(board, position);
-        return chessify(position, moves);
-    }
-
-    public List<ChessMove> chessify(ChessPosition position, boolean[][] moves) {
-        for (int i = 0; i <= 7; i++) {
-            for (int j = 0; j <= 7; j++) {
-                if (moves[i][j]) chessMoves.add(new ChessMove(position, new ChessPosition(i + 1, j + 1)));
-            }
-        }
-        return chessMoves;
+        return moveset.getMoves(board, position);
     }
 
     /**
