@@ -6,9 +6,9 @@ import chess.ChessPosition;
 public class KnightMoves extends Moveset {
 
     @Override
-    protected void calcMoves(ChessBoard board, ChessPosition position) {
+    protected void calcMoves() {
         int distance = 1;
         int[][] directions = {{2,1},{1,2},{-1,2},{-2,1},{-2,-1},{-1,-2},{1,-2},{2,-1}};
-        moves = lineMoves(board, position, directions, distance);
+        lineMoves(board, fromPosition, directions, distance);
     }
 }
