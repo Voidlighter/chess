@@ -6,8 +6,8 @@ import chess.ChessPosition;
 public class QueenMoves extends Moveset {
 
     @Override
-    protected void calcMoves(ChessBoard board, ChessPosition position) {
+    protected void calcMoves() {
         int[][] directions = {{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-        moves = lineMoves(board, position, directions);
+        lineMoves(board, fromPosition, directions);
     }
 }
