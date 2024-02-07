@@ -20,7 +20,7 @@ public class MoveCalculator {
 
     private static List<ChessMove> movesByType(ChessBoard board, ChessPosition position, PieceType type) {
         return switch (type) {
-            case KING, QUEEN, BISHOP, KNIGHT, ROOK -> lineMoves(board, position, new Moveset(type));
+            case KING, QUEEN, BISHOP, KNIGHT, ROOK -> lineMoves(board, position, type);
             case PAWN -> pawnMoves(board, position);
         };
     }
@@ -35,7 +35,7 @@ public class MoveCalculator {
             if (testType == QUEEN) {
                 continue;
             }
-            List<ChessMove> moves = lineMoves(board, position, new Moveset(testType));
+            List<ChessMove> moves = lineMoves(board, position, testType);
             for (ChessMove move : moves) {
                 ChessPosition attackPos = move.getEndPosition();
                 ChessPiece attackPiece = board.getPiece(attackPos);
@@ -64,12 +64,6 @@ public class MoveCalculator {
         int col = position.getColumn() - 1;
         boolean isWhite = board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE;
 
-        if (board.getPiece(position).getPieceType() == PAWN && board.getPiece(position).getTeamColor() == BLACK) {
-            for (int[] direction : directions) {
-                direction[0] *= -1; // Flip the row direction for black pawns
-            }
-        }
-
         // We are going to iterate in the direction given until we hit a piece (where true if enemy then stop)
         for (int[] direction : directions) {
             for (int i = 1; i <= distance; i++) { // iterate in that direction (as far as the piece would)
@@ -93,7 +87,11 @@ public class MoveCalculator {
         return moves;
     }
 
-    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, Moveset moveset) {
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, PieceType type) {
+        Moveset moveset = new Moveset(type);
+        if (type == PAWN && board.getPiece(position).getTeamColor() == BLACK) {
+            moveset.flipDirections();
+        }
         return lineMoves(board, position, moveset.getDirections(), moveset.getDistance());
     }
 
