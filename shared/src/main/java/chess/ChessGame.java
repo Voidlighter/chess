@@ -12,8 +12,6 @@ public class ChessGame {
 
     private ChessBoard gameBoard = new ChessBoard();
     private TeamColor teamTurn = TeamColor.WHITE;
-    private ChessPosition whiteKingPos = new ChessPosition(1, 5);
-    private ChessPosition blackKingPos = new ChessPosition(8, 5);
 
 
     public ChessGame() {
@@ -85,11 +83,6 @@ public class ChessGame {
         }
         if (validMoves(startPos).contains(move)) {
             gameBoard.movePiece(move);
-            if (startPos == whiteKingPos) {
-                whiteKingPos = move.getEndPosition();
-            } else if (startPos == blackKingPos) {
-                blackKingPos = move.getEndPosition();
-            }
             nextTurn();
         } else {
             throw new InvalidMoveException("Can't move" + move.getStartPosition() + " to " +
@@ -105,7 +98,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPos = teamColor == TeamColor.WHITE ? whiteKingPos : blackKingPos;
+        ChessPosition kingPos = teamColor == TeamColor.WHITE ? gameBoard.whiteKingPos : gameBoard.blackKingPos;
         return MoveCalculator.canBeAttacked(gameBoard, kingPos);
     }
 
