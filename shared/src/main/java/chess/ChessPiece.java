@@ -1,7 +1,5 @@
 package chess;
 
-import chess.moveset.*;
-
 import java.util.Collection;
 
 /**
@@ -14,23 +12,10 @@ public class ChessPiece {
 
     private final PieceType type;
     private final ChessGame.TeamColor color;
-    private final Moveset moveset;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.color = pieceColor;
-        moveset = getMoveset(type);
-    }
-
-    private Moveset getMoveset(PieceType type) {
-        return switch (type) {
-            case KING -> new KingMoves();
-            case QUEEN -> new QueenMoves();
-            case BISHOP -> new BishopMoves();
-            case KNIGHT -> new KnightMoves();
-            case ROOK -> new RookMoves();
-            case PAWN -> new PawnMoves();
-        };
     }
 
     /**
@@ -51,7 +36,7 @@ public class ChessPiece {
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return moveset.getMoves(board, position);
+        return MoveCalculator.run(board, position);
     }
 
     /**
