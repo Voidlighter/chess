@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -63,7 +65,7 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return type != null ? type.toString() : " ";
+        return getTeamColor() == WHITE ? type.toString() : type.toString().toLowerCase();
     }
 
     @Override
