@@ -46,9 +46,13 @@ public class ChessBoard {
         }
     }
 
-    public void movePiece(ChessPosition from, ChessPosition to) {
+    public void movePiece(ChessPosition from, ChessPosition to, PieceType promotionType) {
         board[to.getRow() - 1][to.getColumn() - 1] = board[from.getRow() - 1][from.getColumn() - 1];
         board[from.getRow() - 1][from.getColumn() - 1] = null;
+        if (promotionType != null) {
+            board[to.getRow() - 1][to.getColumn() - 1] =
+                    new ChessPiece(board[to.getRow() - 1][to.getColumn() - 1].getTeamColor(), promotionType);
+        }
         if (board[to.getRow() - 1][to.getColumn() - 1].getPieceType() == PieceType.KING) {
             if (board[to.getRow() - 1][to.getColumn() - 1].getTeamColor() == TeamColor.WHITE) {
                 whiteKingPos = to;
@@ -59,7 +63,7 @@ public class ChessBoard {
     }
 
     public void movePiece(ChessMove move) {
-        movePiece(move.getStartPosition(), move.getEndPosition());
+        movePiece(move.getStartPosition(), move.getEndPosition(), move.getPromotionPiece());
     }
 
     /**
