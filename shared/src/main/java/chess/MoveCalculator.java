@@ -1,8 +1,11 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
+
+import static chess.ChessPiece.PieceType.*;
+import static chess.ChessPiece.PieceType;
+import static chess.ChessGame.TeamColor.*;
 
 public class MoveCalculator {
 
@@ -10,34 +13,48 @@ public class MoveCalculator {
         if (!board.isPiece(position))
             return new ArrayList<>();
 
-        List<ChessMove> moves = pieceMoves(board, position);
-        ChessPiece.PieceType type = board.getPiece(position).getPieceType();
-        int[][] directions;
-        int distance = 7;
+        PieceType type = board.getPiece(position).getPieceType();
 
-        return moves;
+        return movesByType(board, position, type);
     }
 
-    protected static List<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        ChessPiece.PieceType type = board.getPiece(position).getPieceType();
+    private static List<ChessMove> movesByType(ChessBoard board, ChessPosition position, PieceType type) {
         return switch (type) {
-            case KING -> lineMoves(board, position,
-                    new int[][]{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}}, 1);
-            case QUEEN -> lineMoves(board, position,
-                    new int[][]{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}}, 7);
-            case BISHOP -> lineMoves(board, position,
-                    new int[][]{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}, 7);
-            case KNIGHT -> lineMoves(board, position,
-                    new int[][]{{2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}}, 1);
-            case ROOK -> lineMoves(board, position,
-                    new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, 7);
+            case KING, QUEEN, BISHOP, KNIGHT, ROOK -> lineMoves(board, position, new Moveset(type));
             case PAWN -> pawnMoves(board, position);
         };
-
+    }
+    
+    public static boolean canBeAttacked(ChessBoard board, ChessPosition position) {
+        PieceType[] pieceTypes = PieceType.values();
+        ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
+        
+        for (PieceType testType : pieceTypes) {
+            if (testType == QUEEN) {
+                continue;
+            }
+            List<ChessMove> moves = lineMoves(board, position, new Moveset(testType));
+            for (ChessMove move : moves) {
+                ChessPosition attackPos = move.getEndPosition();
+                ChessPiece attackPiece = board.getPiece(attackPos);
+                ChessGame.TeamColor pieceColor = attackPiece.getTeamColor();
+                if (attackPiece != null && pieceColor != teamColor) {
+                    if (testType == BISHOP || testType == ROOK) {
+                        if (attackPiece.getPieceType() == QUEEN) {
+                            return true;
+                        }
+                    }
+                    if (attackPiece.getPieceType() == testType) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 
-    protected static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
         List<ChessMove> moves = new ArrayList<>();
         BiConsumer<Integer, Integer> addMove = (row, col) -> {
             moves.add(new ChessMove(position, row + 1, col + 1));
@@ -45,6 +62,12 @@ public class MoveCalculator {
         int row = position.getRow() - 1;
         int col = position.getColumn() - 1;
         boolean isWhite = board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE;
+
+        if (board.getPiece(position).getPieceType() == PAWN && board.getPiece(position).getTeamColor() == BLACK) {
+            for (int[] direction : directions) {
+                direction[0] *= -1; // Flip the row direction for black pawns
+            }
+        }
 
         // We are going to iterate in the direction given until we hit a piece (where true if enemy then stop)
         for (int[] direction : directions) {
@@ -69,18 +92,22 @@ public class MoveCalculator {
         return moves;
     }
 
-    protected static List<ChessMove> pawnMoves(ChessBoard board, ChessPosition position) {
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, Moveset moveset) {
+        return lineMoves(board, position, moveset.getDirections(), moveset.getDistance());
+    }
+
+    private static List<ChessMove> pawnMoves(ChessBoard board, ChessPosition position) {
         List<ChessMove> moves = new ArrayList<>();
 
         BiConsumer<Integer, Integer> addMove = (row, col) -> {
             if (row == 0 || row == 7) {
-                ChessPiece.PieceType[] pieces = {
-                        ChessPiece.PieceType.QUEEN,
-                        ChessPiece.PieceType.BISHOP,
-                        ChessPiece.PieceType.KNIGHT,
-                        ChessPiece.PieceType.ROOK,
+                PieceType[] pieces = {
+                        QUEEN,
+                        BISHOP,
+                        KNIGHT,
+                        ROOK,
                 };
-                for (ChessPiece.PieceType piece : pieces) {
+                for (PieceType piece : pieces) {
                     ChessPosition newPosition = new ChessPosition(row + 1, col + 1);
                     moves.add(new ChessMove(position, newPosition, piece));
                 }
@@ -121,7 +148,7 @@ public class MoveCalculator {
         return moves;
     }
 
-    protected static boolean isInBounds(int row, int col) {
+    private static boolean isInBounds(int row, int col) {
         return row >= 0 && row <= 7 && col >= 0 && col <= 7;
     }
 
