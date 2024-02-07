@@ -21,6 +21,14 @@ public class ChessBoard {
 
     }
 
+    public ChessBoard(ChessBoard other) {
+        for (int i = 0; i < 8; i++) {
+            this.board[i] = Arrays.copyOf(other.board[i], 8);
+        }
+        this.whiteKingPos = other.whiteKingPos;
+        this.blackKingPos = other.blackKingPos;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
