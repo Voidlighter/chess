@@ -29,6 +29,15 @@ public class ChessBoard {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
+    public void movePiece(ChessPosition from, ChessPosition to) {
+        board[to.getRow() - 1][to.getColumn() - 1] = board[from.getRow() - 1][from.getColumn() - 1];
+        board[from.getRow() - 1][from.getColumn() - 1] = null;
+    }
+
+    public void movePiece(ChessMove move) {
+        movePiece(move.getStartPosition(), move.getEndPosition());
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -42,6 +51,10 @@ public class ChessBoard {
 
     public boolean isPiece(int row, int col) {
         return board[row][col] != null;
+    }
+
+    public boolean isPiece(ChessPosition position) {
+        return board[position.getRow() - 1][position.getColumn() - 1] != null;
     }
 
     public boolean isEnemy(boolean isWhite, int row, int col) {
