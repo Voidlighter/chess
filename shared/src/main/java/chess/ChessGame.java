@@ -60,7 +60,19 @@ public class ChessGame {
         if (gameBoard.getPiece(startPosition) == null) {
             return new ArrayList<>();
         }
-        return gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> moves = gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        ChessBoard tempBoard;
+        for (ChessMove move : moves) {
+            tempBoard = new ChessBoard(gameBoard);
+            tempBoard.movePiece(move);
+            ChessPosition kingPos = teamTurn == TeamColor.WHITE ? tempBoard.whiteKingPos : tempBoard.blackKingPos;
+            if (MoveCalculator.canBeAttacked(tempBoard, kingPos)) {
+                continue;
+            }
+            validMoves.add(move);
+        }
+        return validMoves;
     }
 
     /**
@@ -88,7 +100,6 @@ public class ChessGame {
             throw new InvalidMoveException("Can't move" + move.getStartPosition() + " to " +
                     move.getEndPosition() + " because it is not a valid move");
         }
-
     }
 
     /**
