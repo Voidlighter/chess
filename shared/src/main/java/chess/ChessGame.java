@@ -1,7 +1,5 @@
 package chess;
 
-import chess.moveset.*;
-
 import java.util.*;
 
 /**
@@ -108,28 +106,8 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPos = teamColor == TeamColor.WHITE ? whiteKingPos : blackKingPos;
-        return false;
+        return MoveCalculator.canBeAttacked(gameBoard, kingPos);
     }
-//    public boolean isInCheck(TeamColor teamColor) {
-//        ChessPosition kingPos = teamColor == TeamColor.WHITE ? whiteKingPos : blackKingPos;
-//
-//        Map<List<ChessPiece.PieceType>, Moveset> movesets = new HashMap<>();
-//        movesets.put(Arrays.asList(ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN), new BishopMoves());
-//        movesets.put(Arrays.asList(ChessPiece.PieceType.ROOK, ChessPiece.PieceType.QUEEN), new RookMoves());
-//        movesets.put(Collections.singletonList(ChessPiece.PieceType.KNIGHT), new KnightMoves());
-//        movesets.put(Collections.singletonList(ChessPiece.PieceType.PAWN), new PawnAttacks());
-//
-//        for (Map.Entry<List<ChessPiece.PieceType>, Moveset> entry : movesets.entrySet()) {
-//            for (ChessMove move : entry.getValue().getMoves(gameBoard, kingPos)) {
-//                ChessPosition position = move.getEndPosition();
-//                ChessPiece piece = gameBoard.getPiece(position);
-//                if (piece != null && piece.getTeamColor() != teamColor && entry.getKey().contains(piece.getPieceType())) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
 
     /**
      * Determines if the given team is in checkmate
