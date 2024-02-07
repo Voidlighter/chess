@@ -13,6 +13,8 @@ import java.util.Arrays;
  */
 public class ChessBoard {
 
+    public ChessPosition whiteKingPos = new ChessPosition(1, 5);
+    public ChessPosition blackKingPos = new ChessPosition(8, 5);
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
@@ -27,11 +29,25 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
+        if (piece.getPieceType() == PieceType.KING) {
+            if (piece.getTeamColor() == TeamColor.WHITE) {
+                whiteKingPos = position;
+            } else {
+                blackKingPos = position;
+            }
+        }
     }
 
     public void movePiece(ChessPosition from, ChessPosition to) {
         board[to.getRow() - 1][to.getColumn() - 1] = board[from.getRow() - 1][from.getColumn() - 1];
         board[from.getRow() - 1][from.getColumn() - 1] = null;
+        if (board[to.getRow() - 1][to.getColumn() - 1].getPieceType() == PieceType.KING) {
+            if (board[to.getRow() - 1][to.getColumn() - 1].getTeamColor() == TeamColor.WHITE) {
+                whiteKingPos = to;
+            } else {
+                blackKingPos = to;
+            }
+        }
     }
 
     public void movePiece(ChessMove move) {

@@ -26,6 +26,8 @@ public class MoveCalculator {
     }
     
     public static boolean canBeAttacked(ChessBoard board, ChessPosition position) {
+        if (!board.isPiece(position))
+            return false;
         PieceType[] pieceTypes = PieceType.values();
         ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
         
@@ -37,8 +39,7 @@ public class MoveCalculator {
             for (ChessMove move : moves) {
                 ChessPosition attackPos = move.getEndPosition();
                 ChessPiece attackPiece = board.getPiece(attackPos);
-                ChessGame.TeamColor pieceColor = attackPiece.getTeamColor();
-                if (attackPiece != null && pieceColor != teamColor) {
+                if (attackPiece != null && attackPiece.getTeamColor() != teamColor) {
                     if (testType == BISHOP || testType == ROOK) {
                         if (attackPiece.getPieceType() == QUEEN) {
                             return true;
