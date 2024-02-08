@@ -66,7 +66,8 @@ public class ChessGame {
         for (ChessMove move : moves) {
             tempBoard = new ChessBoard(gameBoard);
             tempBoard.movePiece(move);
-            ChessPosition kingPos = teamTurn == TeamColor.WHITE ? tempBoard.whiteKingPos : tempBoard.blackKingPos;
+            ChessPosition kingPos = gameBoard.getPiece(startPosition).getTeamColor() == TeamColor.WHITE ?
+                    tempBoard.whiteKingPos : tempBoard.blackKingPos;
             if (MoveCalculator.canBeAttacked(tempBoard, kingPos)) {
                 continue;
             }
