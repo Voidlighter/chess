@@ -42,6 +42,7 @@ public class ChessBoard {
                 this.board[i][j] = new ChessPiece(other.board[i][j]);
             }
         }
+        this.turnCount = other.turnCount;
         this.whiteKingPos = other.whiteKingPos;
         this.blackKingPos = other.blackKingPos;
     }
