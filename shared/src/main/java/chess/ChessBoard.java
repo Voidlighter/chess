@@ -140,9 +140,9 @@ public class ChessBoard {
         return board[position.getRow() - 1][position.getColumn() - 1] != null;
     }
 
-    public boolean isEnemy(boolean isWhite, int row, int col) {
+    public boolean isEnemy(TeamColor myTeam, int row, int col) {
         if (!isPiece(row, col)) return false;
-        return board[row][col].getTeamColor() != (isWhite ? WHITE : BLACK);
+        return board[row][col].getTeamColor() != myTeam;
     }
 
     /**

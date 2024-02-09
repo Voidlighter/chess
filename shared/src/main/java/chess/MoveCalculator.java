@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import static chess.ChessPiece.PieceType.*;
 import static chess.ChessPiece.PieceType;
 import static chess.ChessGame.TeamColor.*;
+import static chess.ChessGame.TeamColor;
 
 public class MoveCalculator {
 
@@ -33,18 +34,21 @@ public class MoveCalculator {
     public static boolean canBeAttacked(ChessBoard board, ChessPosition position) {
         if (!board.isPiece(position))
             return false;
+        return canBeAttacked(board, position, board.getPiece(position).getTeamColor());
+    }
+
+    public static boolean canBeAttacked(ChessBoard board, ChessPosition position, TeamColor color) {
         PieceType[] pieceTypes = PieceType.values();
-        ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
 
         for (PieceType testType : pieceTypes) {
             if (testType == QUEEN) {
                 continue;
             }
-            List<ChessMove> moves = lineMoves(board, position, testType);
+            List<ChessMove> moves = lineMoves(board, position, testType, color);
             for (ChessMove move : moves) {
                 ChessPosition attackPos = move.getEndPosition();
                 ChessPiece attackPiece = board.getPiece(attackPos);
-                if (attackPiece != null && attackPiece.getTeamColor() != teamColor) {
+                if (attackPiece != null && attackPiece.getTeamColor() != color) {
                     if (testType == BISHOP || testType == ROOK) {
                         if (attackPiece.getPieceType() == QUEEN) {
                             return true;
@@ -59,15 +63,13 @@ public class MoveCalculator {
         return false;
     }
 
-
-    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance, TeamColor color) {
         List<ChessMove> moves = new ArrayList<>();
         BiConsumer<Integer, Integer> addMove = (row, col) -> {
             moves.add(new ChessMove(position, row + 1, col + 1));
         };
         int row = position.getRow() - 1;
         int col = position.getColumn() - 1;
-        boolean isWhite = board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE;
 
         // We are going to iterate in the direction given until we hit a piece (where true if enemy then stop)
         for (int[] direction : directions) {
@@ -78,7 +80,7 @@ public class MoveCalculator {
                 if (isInBounds(tryY, tryX)) {
                     if (board.isPiece(tryY, tryX)) {
                         // if we found an enemy, we still add that as a spot we can move
-                        if (board.isEnemy(isWhite, tryY, tryX)) {
+                        if (board.isEnemy(color, tryY, tryX)) {
                             addMove.accept(tryY, tryX);
                         }
                         break; // if we found a piece we are done with this direction
@@ -91,13 +93,20 @@ public class MoveCalculator {
         }
         return moves;
     }
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
+        return lineMoves(board, position, directions, distance, board.getPiece(position).getTeamColor());
+    }
 
-    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, PieceType type) {
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, PieceType type, TeamColor color) {
         Moveset moveset = new Moveset(type);
-        if (type == PAWN && board.getPiece(position).getTeamColor() == BLACK) {
+        if (type == PAWN && color == BLACK) {
             moveset.flipDirections();
         }
-        return lineMoves(board, position, moveset.getDirections(), moveset.getDistance());
+        return lineMoves(board, position, moveset.getDirections(), moveset.getDistance(), color);
+    }
+
+    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, PieceType type) {
+        return lineMoves(board, position, type, board.getPiece(position).getTeamColor());
     }
 
     private static List<ChessMove> pawnMoves(ChessBoard board, ChessPosition position) {
@@ -115,8 +124,8 @@ public class MoveCalculator {
             }
         };
 
-        boolean isWhite = board.getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE;
-        int upOne = isWhite ? 1 : -1;
+        TeamColor teamColor = board.getPiece(position).getTeamColor();
+        int upOne = teamColor == WHITE ? 1 : -1;
         int row = position.getRow() - 1;
         int col = position.getColumn() - 1;
 
@@ -130,7 +139,7 @@ public class MoveCalculator {
             tryY = row + (2 * upOne);
 
             // Move two forward
-            boolean hasMoved = isWhite ? row != 1 : row != 6;
+            boolean hasMoved = teamColor == WHITE ? row != 1 : row != 6;
             if (isInBounds(tryY, tryX) && !board.isPiece(tryY, tryX) && !hasMoved) {
                 addMove.accept(tryY, tryX);
             }
@@ -141,10 +150,10 @@ public class MoveCalculator {
         for (int i = -1; i <= 1; i += 2) { // This will just try on both sides
             tryX = col + i;
             if (isInBounds(tryY, tryX)) {
-                if (board.isEnemy(isWhite, tryY, tryX))
+                if (board.isEnemy(teamColor, tryY, tryX))
                     addMove.accept(tryY, tryX);
                 // En Passant
-                if (board.isEnemy(isWhite, row, tryX) && board.getPiece(row, tryX).movedTwo == board.getTurnCount() - 1)
+                if (board.isEnemy(teamColor, row, tryX) && board.getPiece(row, tryX).movedTwo == board.getTurnCount() - 1)
                     addMove.accept(tryY, tryX);
             }
         }
@@ -170,15 +179,19 @@ public class MoveCalculator {
                 int[] path = {1, 2};
                 for (int i : path) {
                     ChessPosition testPos = new ChessPosition(position.getRow(), position.getColumn() + (i * direction));
-                    if (board.isPiece(testPos) || canBeAttacked(board, testPos)) {
+                    if (isInBounds(testPos) && board.isPiece(testPos) || canBeAttacked(board, testPos, board.getPiece(position).getTeamColor())) {
                         break;
                     }
-                    if (i == 2) {
+                    if (isInBounds(testPos) && i == 2) {
                         moves.add(new ChessMove(position, position.getRow(), position.getColumn() + (i * direction)));
                     }
                 }
             }
         }
         return moves;
+    }
+
+    private static boolean isInBounds(ChessPosition testPos) {
+        return testPos.getRow() >= 1 && testPos.getRow() <= 8 && testPos.getColumn() >= 1 && testPos.getColumn() <= 8;
     }
 }
