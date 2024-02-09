@@ -15,9 +15,19 @@ public class ChessPiece {
     private final PieceType type;
     private final ChessGame.TeamColor color;
 
+    public boolean hasMoved = false;
+    public int movedTwo = 0;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.type = type;
         this.color = pieceColor;
+    }
+
+    public ChessPiece(ChessPiece piece) {
+        this.type = piece.type;
+        this.color = piece.color;
+        this.hasMoved = piece.hasMoved;
+        this.movedTwo = piece.movedTwo;
     }
 
     /**

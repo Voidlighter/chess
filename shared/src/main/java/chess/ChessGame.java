@@ -13,7 +13,6 @@ public class ChessGame {
     private ChessBoard gameBoard = new ChessBoard();
     private TeamColor teamTurn = TeamColor.WHITE;
 
-
     public ChessGame() {
 
     }
@@ -40,6 +39,7 @@ public class ChessGame {
         } else {
             teamTurn = TeamColor.WHITE;
         }
+        gameBoard.nextTurn();
     }
 
     /**

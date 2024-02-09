@@ -20,17 +20,22 @@ public class MoveCalculator {
 
     private static List<ChessMove> movesByType(ChessBoard board, ChessPosition position, PieceType type) {
         return switch (type) {
-            case KING, QUEEN, BISHOP, KNIGHT, ROOK -> lineMoves(board, position, type);
+            case QUEEN, BISHOP, KNIGHT, ROOK -> lineMoves(board, position, type);
+            case KING -> kingMoves(board, position, type);
             case PAWN -> pawnMoves(board, position);
         };
     }
-    
+
+    private static boolean isInBounds(int row, int col) {
+        return row >= 0 && row <= 7 && col >= 0 && col <= 7;
+    }
+
     public static boolean canBeAttacked(ChessBoard board, ChessPosition position) {
         if (!board.isPiece(position))
             return false;
         PieceType[] pieceTypes = PieceType.values();
         ChessGame.TeamColor teamColor = board.getPiece(position).getTeamColor();
-        
+
         for (PieceType testType : pieceTypes) {
             if (testType == QUEEN) {
                 continue;
@@ -100,12 +105,7 @@ public class MoveCalculator {
 
         BiConsumer<Integer, Integer> addMove = (row, col) -> {
             if (row == 0 || row == 7) {
-                PieceType[] pieces = {
-                        QUEEN,
-                        BISHOP,
-                        KNIGHT,
-                        ROOK,
-                };
+                PieceType[] pieces = {QUEEN, BISHOP, KNIGHT, ROOK};
                 for (PieceType piece : pieces) {
                     ChessPosition newPosition = new ChessPosition(row + 1, col + 1);
                     moves.add(new ChessMove(position, newPosition, piece));
@@ -140,15 +140,45 @@ public class MoveCalculator {
         tryY = row + upOne;
         for (int i = -1; i <= 1; i += 2) { // This will just try on both sides
             tryX = col + i;
-            if (isInBounds(tryY, tryX) && board.isEnemy(isWhite, tryY, tryX)) {
-                addMove.accept(tryY, tryX);
+            if (isInBounds(tryY, tryX)) {
+                if (board.isEnemy(isWhite, tryY, tryX))
+                    addMove.accept(tryY, tryX);
+                // En Passant
+                if (board.isEnemy(isWhite, row, tryX) && board.getPiece(row, tryX).movedTwo == board.getTurnCount() - 1)
+                    addMove.accept(tryY, tryX);
+            }
+        }
+
+        return moves;
+    }
+
+    private static List<ChessMove> kingMoves(ChessBoard board, ChessPosition position, PieceType type) {
+        List<ChessMove> moves = lineMoves(board, position, type);
+        // Castling
+        if (board.getPiece(position).hasMoved || canBeAttacked(board, position)) {
+            return moves;
+        }
+        ChessPosition rookPos;
+        ChessPiece rook;
+        int[] corners = {1, 8};
+        for (int corner : corners) {
+            rookPos = new ChessPosition(position.getRow(), corner);
+            rook = board.getPiece(rookPos);
+            if (rook != null && !rook.hasMoved) {
+                // Check if the path is clear
+                int direction = corner == 1 ? -1 : 1;
+                int[] path = {1, 2};
+                for (int i : path) {
+                    ChessPosition testPos = new ChessPosition(position.getRow(), position.getColumn() + (i * direction));
+                    if (board.isPiece(testPos) || canBeAttacked(board, testPos)) {
+                        break;
+                    }
+                    if (i == 2) {
+                        moves.add(new ChessMove(position, position.getRow(), position.getColumn() + (i * direction)));
+                    }
+                }
             }
         }
         return moves;
     }
-
-    private static boolean isInBounds(int row, int col) {
-        return row >= 0 && row <= 7 && col >= 0 && col <= 7;
-    }
-
 }
