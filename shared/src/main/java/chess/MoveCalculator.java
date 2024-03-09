@@ -93,9 +93,9 @@ public class MoveCalculator {
         }
         return moves;
     }
-    private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
-        return lineMoves(board, position, directions, distance, board.getPiece(position).getTeamColor());
-    }
+    // private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, int[][] directions, int distance) {
+    //     return lineMoves(board, position, directions, distance, board.getPiece(position).getTeamColor());
+    // }
 
     private static List<ChessMove> lineMoves(ChessBoard board, ChessPosition position, PieceType type, TeamColor color) {
         Moveset moveset = new Moveset(type);

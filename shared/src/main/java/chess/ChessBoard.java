@@ -69,6 +69,7 @@ public class ChessBoard {
                     piece.movedTwo = turnCount;
                 }
             }
+            case BISHOP, KNIGHT, QUEEN, ROOK -> {}
         }
     }
 
