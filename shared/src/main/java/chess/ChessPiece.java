@@ -2,8 +2,6 @@ package chess;
 
 import java.util.Collection;
 
-import static chess.ChessGame.TeamColor.WHITE;
-
 /**
  * Represents a single chess piece
  * <p>
@@ -12,22 +10,7 @@ import static chess.ChessGame.TeamColor.WHITE;
  */
 public class ChessPiece {
 
-    private final PieceType type;
-    private final ChessGame.TeamColor color;
-
-    public boolean hasMoved = false;
-    public int movedTwo = 0;
-
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.type = type;
-        this.color = pieceColor;
-    }
-
-    public ChessPiece(ChessPiece piece) {
-        this.type = piece.type;
-        this.color = piece.color;
-        this.hasMoved = piece.hasMoved;
-        this.movedTwo = piece.movedTwo;
     }
 
     /**
@@ -39,30 +22,21 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN;
-
-        @Override
-        public String toString() {
-            return this == KNIGHT ? "N" : name().substring(0, 1);
-        }
-    }
-
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        return MoveCalculator.run(board, position);
+        PAWN
     }
 
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return color;
+        throw new RuntimeException("Not implemented");
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return type;
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -72,22 +46,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-
-    @Override
-    public String toString() {
-        return getTeamColor() == WHITE ? type.toString() : type.toString().toLowerCase();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChessPiece that)) return false;
-
-        return type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return type != null ? type.hashCode() : 0;
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        throw new RuntimeException("Not implemented");
     }
 }
