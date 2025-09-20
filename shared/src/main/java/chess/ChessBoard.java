@@ -55,7 +55,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
-        switch (piece.getPieceType()) {
+        if (piece != null) switch (piece.getPieceType()) {
             case KING -> {
                 if (piece.getTeamColor() == WHITE) {
                     whiteKingPos = position;
