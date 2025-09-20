@@ -1,5 +1,10 @@
 package chess;
 
+import chess.ChessPiece.PieceType;
+import chess.ChessGame.TeamColor;
+
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -8,8 +13,10 @@ package chess;
  */
 public class ChessBoard {
 
+    private final ChessPiece[][] board = new ChessPiece[8][8];
+
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -19,7 +26,16 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        board[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    public void movePiece(ChessPosition from, ChessPosition to) {
+        board[to.getRow() - 1][to.getColumn() - 1] = board[from.getRow() - 1][from.getColumn() - 1];
+        board[from.getRow() - 1][from.getColumn() - 1] = null;
+    }
+
+    public void movePiece(ChessMove move) {
+        movePiece(move.getStartPosition(), move.getEndPosition());
     }
 
     /**
@@ -30,7 +46,20 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return board[position.getRow() - 1][position.getColumn() - 1];
+    }
+
+    public boolean isPiece(int row, int col) {
+        return board[row][col] != null;
+    }
+
+    public boolean isPiece(ChessPosition position) {
+        return board[position.getRow() - 1][position.getColumn() - 1] != null;
+    }
+
+    public boolean isEnemy(boolean isWhite, int row, int col) {
+        if (!isPiece(row, col)) return false;
+        return board[row][col].getTeamColor() != (isWhite ? TeamColor.WHITE : TeamColor.BLACK);
     }
 
     /**
@@ -38,6 +67,63 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        // This will run for white and black
+        for (int i = 0; i < 2; i++) {
+            boolean isWhite = i == 0;
+            TeamColor color = isWhite ? TeamColor.WHITE : TeamColor.BLACK;
+            int row = isWhite ? 1 : 8; // as a ChessPosition, not as an array index
+            int row2 = isWhite ? 2 : 7; // as a ChessPosition, not as an array index
+            addPiece(new ChessPosition(row, 1), new ChessPiece(color, PieceType.ROOK));
+            addPiece(new ChessPosition(row, 2), new ChessPiece(color, PieceType.KNIGHT));
+            addPiece(new ChessPosition(row, 3), new ChessPiece(color, PieceType.BISHOP));
+            addPiece(new ChessPosition(row, 4), new ChessPiece(color, PieceType.QUEEN));
+            addPiece(new ChessPosition(row, 5), new ChessPiece(color, PieceType.KING));
+            addPiece(new ChessPosition(row, 6), new ChessPiece(color, PieceType.BISHOP));
+            addPiece(new ChessPosition(row, 7), new ChessPiece(color, PieceType.KNIGHT));
+            addPiece(new ChessPosition(row, 8), new ChessPiece(color, PieceType.ROOK));
+            for (int col = 1; col <= 8; col++) {
+                addPiece(new ChessPosition(row2, col), new ChessPiece(color, PieceType.PAWN));
+            }
+        }
+    }
+    /*
+
+    |r|n|b|q|k|b|n|r| 8
+    |p|p|p|p|p|p|p|p| 7
+    | | | | | | | | | 6
+    | | | | | | | | | 5
+    | | | | | | | | | 4
+    | | | | | | | | | 3
+    |P|P|P|P|P|P|P|P| 2
+    |R|N|B|Q|K|B|N|R| 1
+
+     1 2 3 4 5 6 7 8
+
+     */
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 0; j <= 7; j++) {
+                sb.append("|");
+                sb.append(board[i][j] == null ? " " : board[i][j]);
+            }
+            sb.append("|\n");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessBoard that)) return false;
+
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
     }
 }
