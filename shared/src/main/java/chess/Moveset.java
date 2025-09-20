@@ -37,4 +37,10 @@ public class Moveset {
     public int getDistance() {
         return distance;
     }
+
+    public void flipDirections() {
+        for (int[] direction : directions) {
+            direction[0] *= -1; // Flip the row direction for black pawns
+        }
+    }
 }
